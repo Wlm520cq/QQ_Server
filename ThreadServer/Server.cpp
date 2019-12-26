@@ -49,14 +49,18 @@ unsigned WINAPI HandleCln(void* arg)
 	while (1)
 	{
 		iLen = recv(hClntSock, szMsg, sizeof(szMsg), 0);
-		printf("recv msg = %s,iLen = %d", szMsg, iLen);
-		if (iLen!=0)
+		printf("recv msg = %s iLen = %d\n", szMsg, iLen);
+		if (iLen != -1)
 		{
 			//收到的数据立马发给所有的客服端
 			SendMsg(szMsg, iLen);
 		}
+		else
+		{
+			break;
+		}
 	}
-
+	printf("当前连接客户端的数目：%d", clntCnt);
 	//3.处理某个客户端 断开连接  需要处理断开的连接
 	//只要是操纵全局变量  创建一个新的客户端  就加锁 避免资源竞争
 	WaitForSingleObject(hMutex, INFINITE);
@@ -73,7 +77,7 @@ unsigned WINAPI HandleCln(void* arg)
 		}
 	}
 	clntCnt--;
-	printf("此时连接的舒服%d: ", clntCnt);
+	printf("断开一个连接客户端的数目：%d", clntCnt);
 	ReleaseMutex(hMutex);
 	closesocket(hClntSock);
 	return 0;
