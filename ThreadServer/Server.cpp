@@ -41,10 +41,22 @@ unsigned WINAPI HandleCln(void* arg)
 	char szMsg[MAX_BUF_SIZE] = { 0 };
 	//2.进行数据的接收、发送  循环接收
 	//接收到客户端的数据
-	while ((iLen = recv(hClntSock, szMsg, sizeof(szMsg), 0)) != 0)
+	/*while ((iLen = recv(hClntSock, szMsg, sizeof(szMsg), 0)) != 0)
 	{
 		SendMsg(szMsg, iLen);
+	}*/
+
+	while (1)
+	{
+		iLen = recv(hClntSock, szMsg, sizeof(szMsg), 0);
+		printf("recv msg = %s,iLen = %d", szMsg, iLen);
+		if (iLen!=0)
+		{
+			//收到的数据立马发给所有的客服端
+			SendMsg(szMsg, iLen);
+		}
 	}
+
 	//3.处理某个客户端 断开连接  需要处理断开的连接
 	//只要是操纵全局变量  创建一个新的客户端  就加锁 避免资源竞争
 	WaitForSingleObject(hMutex, INFINITE);
